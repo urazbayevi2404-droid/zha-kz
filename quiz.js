@@ -1,5 +1,5 @@
 const app = document.querySelector('#app');
-const stages = ['Начало', 'Развилка', 'Последствия'];
+const stages = ['Моя роль', 'Общее решение', 'Последствия'];
 const maximumChoices = 4;
 const noAnswerLabel = 'Ни один не подходит';
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -43,7 +43,7 @@ function showWelcome() {
     <section class="panel welcome" aria-labelledby="welcome-title">
       <p class="label">${EDITION.title}</p>
       <h1 class="display-title" id="welcome-title" tabindex="-1">История решений</h1>
-      <p class="welcome-lead">Прочитай сцену до конца и проверь свои ответы по её деталям. От моих решений зависит, что произойдёт с остановкой и людьми вокруг неё.</p>
+      <p class="welcome-lead">Что у моей остановки зависит от меня? Я начну с этого вопроса, выберу решение для пассажиров, а потом увижу, как оно отразилось на их поездках.</p>
       <ol class="rules">
         <li><span class="rule-number" aria-hidden="true">01</span> В обычной сцене найди четыре подходящих варианта из восьми.</li>
         <li><span class="rule-number" aria-hidden="true">02</span> Можно проверить часть ответов или выбрать ${noAnswerLabel}.</li>
@@ -191,7 +191,7 @@ function revealOptions(cards, options, choices) {
 function showFeedback(current, selected, level, { score, max, trapSolved }) {
   const feedback = app.querySelector('.feedback');
   const isFinal = level === stages.length - 1;
-  const title = max ? 'Разбор ситуации' : 'Здесь не подошёл ни один план';
+  const title = max ? 'Разбор ситуации' : 'Все четыре вывода расходятся с историей';
   const scoreMarkup = max ? `<div class="case-score"><strong>${score} / ${max}</strong><span>верных</span></div>` : '';
   const explanationTitle = trapSolved
     ? 'Почему этот ответ верный'
@@ -201,7 +201,7 @@ function showFeedback(current, selected, level, { score, max, trapSolved }) {
     correct: trapSolved,
     why: trapSolved
       ? current.noneWhy
-      : 'У этой сцены четыре подходящих ответа. Обрати внимание на детали места, времени и действия.',
+      : 'В этой сцене есть четыре подходящих ответа. Сверь варианты с вопросом и с тем, что произошло в истории.',
   }];
   feedback.innerHTML = `
     <div class="feedback-top">
