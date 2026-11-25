@@ -1,6 +1,7 @@
 const app = document.querySelector('#app');
 const stages = ['Начало', 'Развилка', 'Последствия'];
 const maximumChoices = 4;
+const noAnswerLabel = 'Ни один не подходит';
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const route = [];
 
@@ -27,12 +28,11 @@ function showIntro(moveFocus) {
   const cover = (EDITION.cover?.length ? EDITION.cover : [EDITION.title]).map(line => `<span>${line}</span>`).join('');
   showScreen(`
     <section class="intro" aria-labelledby="intro-title">
-      <h1 id="intro-title" tabindex="-1">${cover}</h1>
-      <div class="intro-rule" aria-hidden="true"></div>
-      <p class="intro-subtitle">${EDITION.subtitle}</p>
-      <button class="button button-primary" id="open-quiz" type="button">
-        Начать <span class="button-symbol" aria-hidden="true">↓</span>
-      </button>
+      <div class="panel intro-glass">
+        <h1 id="intro-title" tabindex="-1">${cover}</h1>
+        <p class="intro-subtitle">${EDITION.subtitle}</p>
+        <button class="button button-primary" id="open-quiz" type="button">Начать</button>
+      </div>
     </section>
   `, moveFocus);
   app.querySelector('#open-quiz').addEventListener('click', showWelcome);
@@ -43,10 +43,10 @@ function showWelcome() {
     <section class="panel welcome" aria-labelledby="welcome-title">
       <p class="label">${EDITION.title}</p>
       <h1 class="display-title" id="welcome-title" tabindex="-1">История решений</h1>
-      <p class="welcome-lead">Прочитай сцену до конца и проверь свои ответы по её деталям. От результата зависит, что произойдёт с героем дальше.</p>
+      <p class="welcome-lead">Прочитай сцену до конца и проверь свои ответы по её деталям. От моих решений зависит, что произойдёт с остановкой и людьми вокруг неё.</p>
       <ol class="rules">
         <li><span class="rule-number" aria-hidden="true">01</span> В обычной сцене найди четыре подходящих варианта из восьми.</li>
-        <li><span class="rule-number" aria-hidden="true">02</span> Можно проверить часть ответов или выбрать «Ни один не подходит».</li>
+        <li><span class="rule-number" aria-hidden="true">02</span> Можно проверить часть ответов или выбрать ${noAnswerLabel}.</li>
         <li><span class="rule-number" aria-hidden="true">03</span> После трёх сцен ты увидишь свой маршрут и итог истории.</li>
       </ol>
       <button class="button button-primary" id="start-run" type="button">Начать тест</button>
@@ -85,7 +85,7 @@ function showCase(id) {
   ]);
   const previous = route.at(-1);
   const trace = previous ? `
-    <p class="scene-trace">После сцены «${CASES[previous.id].title}» у тебя ${previous.score} из ${previous.max} верных.</p>
+    <p class="scene-trace">В предыдущей сцене у тебя ${previous.score} из ${previous.max} верных.</p>
   ` : '';
 
   showScreen(`
@@ -105,7 +105,7 @@ function showCase(id) {
       <div class="options" role="group" aria-labelledby="question-title" aria-describedby="question-hint">${optionList(options)}</div>
       <div class="actions">
         <button class="button button-primary" id="check-answers" type="button" disabled>Проверить ответы</button>
-        <button class="button button-secondary" id="no-answers" type="button" aria-pressed="false">Ни один не подходит</button>
+        <button class="button button-secondary" id="no-answers" type="button" aria-pressed="false">${noAnswerLabel}</button>
       </div>
       <p class="choice-note" role="status"></p>
     </section>
@@ -157,12 +157,13 @@ function showCase(id) {
     check.disabled = true;
     app.querySelector('.actions').hidden = true;
     choiceNote.textContent = '';
-    const score = options.filter((option, index) => option.correct && choices.has(index)).length;
+    const selected = options.filter((_, index) => choices.has(index));
+    const score = selected.filter(option => option.correct).length;
     const max = current.correct.length;
-    const trapSolved = max === 0 && choseNone;
-    route.push({ id, score, max, trapSolved });
+    const result = { id, score, max, trapSolved: max === 0 && choseNone };
+    route.push(result);
     revealOptions(cards, options, choices);
-    showFeedback(current, options, level, score, max, trapSolved);
+    showFeedback(current, selected, level, result);
   }, { once: true });
 }
 
@@ -187,11 +188,21 @@ function revealOptions(cards, options, choices) {
   }
 }
 
-function showFeedback(current, options, level, score, max, trapSolved) {
+function showFeedback(current, selected, level, { score, max, trapSolved }) {
   const feedback = app.querySelector('.feedback');
   const isFinal = level === stages.length - 1;
   const title = max ? 'Разбор ситуации' : 'Здесь не подошёл ни один план';
   const scoreMarkup = max ? `<div class="case-score"><strong>${score} / ${max}</strong><span>верных</span></div>` : '';
+  const explanationTitle = trapSolved
+    ? 'Почему этот ответ верный'
+    : score === maximumChoices ? 'Разобрать выбранные варианты' : 'Работа над ошибками';
+  const explained = selected.length ? selected : [{
+    text: noAnswerLabel,
+    correct: trapSolved,
+    why: trapSolved
+      ? current.noneWhy
+      : 'У этой сцены четыре подходящих ответа. Обрати внимание на детали места, времени и действия.',
+  }];
   feedback.innerHTML = `
     <div class="feedback-top">
       <div>${trapSolved ? '<p class="label">Особая задача решена</p>' : ''}<h2 id="feedback-title" tabindex="-1">${title}</h2></div>
@@ -199,8 +210,13 @@ function showFeedback(current, options, level, score, max, trapSolved) {
     </div>
     <p class="takeaway">${current.takeaway}</p>
     <details class="explanations">
-      <summary>Разобрать каждый вариант</summary>
-      <ul>${options.map(({ text, why }) => `<li><strong>${text}</strong><p>${why}</p></li>`).join('')}</ul>
+      <summary>${explanationTitle}</summary>
+      <ul>${explained.map(({ text, why, correct }) => `
+        <li>
+          <span class="explanation-status" data-correct="${correct}">${correct ? 'Верно' : 'Не подходит'}</span>
+          <strong>${text}</strong>
+          <p>${why}</p>
+        </li>`).join('')}</ul>
     </details>
     <button class="button button-primary" id="continue-run" type="button">${isFinal ? 'Узнать результат' : 'Продолжить'}</button>
   `;
@@ -256,7 +272,7 @@ function showResult(id) {
         <p class="recap-example">${EDITION.finalPrompt}</p>
       </section>
       <button class="button button-secondary" id="restart-run" type="button">
-        <span class="button-symbol" aria-hidden="true">↺</span> Начать заново
+        Начать заново
       </button>
     </section>
   `);

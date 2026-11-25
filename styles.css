@@ -11,6 +11,7 @@
   --soft: rgb(255 255 255 / 0.12);
   --line: rgb(197 155 208 / 0.29);
   --panel: #211339;
+  --glass-edge: rgb(230 197 247 / 0.30);
   --font-text: 'Montserrat', 'Segoe UI', sans-serif;
   --font-display: 'Gotham', 'Montserrat', 'Segoe UI', sans-serif;
 }
@@ -19,6 +20,7 @@
 [hidden] { display: none !important; }
 
 body {
+  isolation: isolate;
   min-width: 0;
   min-height: 100vh;
   margin: 0;
@@ -47,44 +49,86 @@ h1, h2, h3, p, ol, ul { margin: 0; }
   inset: 0;
   overflow: hidden;
   background:
-    radial-gradient(ellipse at 77% 37%, rgb(70 38 131 / 0.89), transparent 64%),
-    radial-gradient(ellipse at 8% 79%, rgb(70 38 131 / 0.57), transparent 62%),
+    radial-gradient(ellipse at 42% 104%, rgb(70 38 131 / 0.53), transparent 65%),
     var(--night);
   pointer-events: none;
 }
 
-.backdrop-grid {
+.backdrop-lights {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(ellipse 32% 25% at 68% 32%, rgb(197 155 208 / 0.26), transparent 78%),
+    radial-gradient(ellipse 44% 49% at 63% 38%, rgb(70 38 131 / 0.99), transparent 80%),
+    radial-gradient(ellipse 28% 32% at 22% 65%, rgb(70 38 131 / 0.70), transparent 76%),
+    radial-gradient(ellipse 18% 26% at 19% 65%, rgb(0 176 201 / 0.20), transparent 76%),
+    radial-gradient(ellipse 14% 19% at 86% 79%, rgb(255 181 71 / 0.19), transparent 78%);
+  animation: light-drift 24s ease-in-out infinite alternate;
+}
+
+.backdrop-particles { position: absolute; inset: -6%; }
+
+.backdrop-particles::before,
+.backdrop-particles::after {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(circle, rgb(250 224 164 / 0.32) 1px, transparent 1.4px) 0 0 / 37px 37px,
-    linear-gradient(90deg, rgb(197 155 208 / 0.11) 1px, transparent 1px) 0 0 / 148px 148px,
-    linear-gradient(rgb(197 155 208 / 0.11) 1px, transparent 1px) 0 0 / 148px 148px;
-  mask-image: radial-gradient(ellipse at 78% 21%, #000, transparent 81%);
-  opacity: 0.52;
+  content: '';
+  background-repeat: no-repeat;
+}
+
+.backdrop-particles::before {
+  background-image:
+    radial-gradient(circle at 12% 19%, rgb(250 224 164 / 0.8) 0 1px, transparent 2.2px),
+    radial-gradient(circle at 22% 76%, rgb(197 155 208 / 0.7) 0 1px, transparent 2px),
+    radial-gradient(circle at 35% 29%, rgb(255 255 255 / 0.59) 0 1px, transparent 1.9px),
+    radial-gradient(circle at 45% 82%, rgb(197 155 208 / 0.76) 0 1.2px, transparent 2.3px),
+    radial-gradient(circle at 56% 16%, rgb(250 224 164 / 0.76) 0 1px, transparent 2.1px),
+    radial-gradient(circle at 66% 71%, rgb(255 255 255 / 0.71) 0 1px, transparent 2.2px),
+    radial-gradient(circle at 74% 18%, rgb(197 155 208 / 0.87) 0 1.4px, transparent 2.5px),
+    radial-gradient(circle at 82% 48%, rgb(250 224 164 / 0.76) 0 1.1px, transparent 2.2px),
+    radial-gradient(circle at 91% 32%, rgb(255 255 255 / 0.81) 0 1px, transparent 2.1px),
+    radial-gradient(circle at 89% 80%, rgb(197 155 208 / 0.89) 0 1.3px, transparent 2.5px);
+  animation: dust-drift 22s ease-in-out infinite alternate;
+}
+
+.backdrop-particles::after {
+  background-image:
+    radial-gradient(circle at 15% 43%, rgb(0 176 201 / 0.88) 0 0.9px, transparent 2px),
+    radial-gradient(circle at 28% 59%, rgb(255 255 255 / 0.59) 0 1px, transparent 2px),
+    radial-gradient(circle at 31% 13%, rgb(197 155 208 / 0.72) 0 0.9px, transparent 1.8px),
+    radial-gradient(circle at 48% 17%, rgb(255 181 71 / 0.70) 0 0.9px, transparent 1.8px),
+    radial-gradient(circle at 56% 63%, rgb(197 155 208 / 0.76) 0 1px, transparent 1.9px),
+    radial-gradient(circle at 67% 38%, rgb(255 255 255 / 0.63) 0 1px, transparent 2px),
+    radial-gradient(circle at 77% 72%, rgb(0 176 201 / 0.75) 0 0.9px, transparent 2px),
+    radial-gradient(circle at 87% 62%, rgb(250 224 164 / 0.67) 0 1px, transparent 1.9px);
+  animation: dust-drift 28s ease-in-out -9s infinite alternate-reverse;
 }
 
 .backdrop-logo {
   position: absolute;
   top: 48%;
-  left: max(54%, calc(50% + 145px));
-  width: clamp(320px, 64vw, 790px);
+  left: max(61%, calc(50% + 154px));
+  width: clamp(330px, 62vw, 790px);
   height: auto;
-  opacity: 0.07;
+  opacity: 0.12;
   translate: -35% -50%;
-  filter: blur(3px);
+  filter: blur(4px);
 }
 
-body:has(.intro) .backdrop-logo { opacity: 0.12; }
+body:has(.intro) .backdrop-logo { opacity: 0.16; }
 
 .masthead {
-  border-bottom: 1px solid var(--soft);
-  background: rgb(13 8 32 / 0.51);
+  width: min(100% - 48px, 1040px);
+  margin: 17px auto 0;
+  border: 1px solid var(--glass-edge);
+  border-radius: 22px;
+  background: linear-gradient(155deg, rgb(197 155 208 / 0.18), transparent 65%), rgb(24 13 43 / 0.89);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16), 0 12px 36px rgb(0 0 0 / 0.2);
 }
 
 .masthead-inner {
   display: flex;
-  min-height: 82px;
+  min-height: 65px;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
@@ -103,10 +147,10 @@ body:has(.intro) .backdrop-logo { opacity: 0.12; }
 
 .intro {
   display: grid;
-  min-height: calc(100svh - 178px);
+  min-height: calc(100svh - 186px);
   align-content: center;
   justify-items: center;
-  padding-block: 32px 64px;
+  padding-block: 18px 48px;
   text-align: center;
   animation: appear 420ms ease-out both;
 }
@@ -122,23 +166,15 @@ body:has(.intro) .backdrop-logo { opacity: 0.12; }
 .intro h1 span + span { margin-top: 0.06em; }
 .intro h1 span:last-child { color: var(--gold); }
 
-.intro-rule {
-  width: min(100%, 440px);
-  height: 1px;
-  margin-top: 31px;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
-  opacity: 0.6;
-}
-
 .intro-subtitle {
-  max-width: 32ch;
+  max-width: 35ch;
   margin-top: 22px;
   color: var(--muted);
   font-size: clamp(1rem, 2vw, 1.125rem);
   font-weight: 500;
 }
 
-.intro .button { margin-top: 29px; }
+.intro .button { min-width: 160px; margin-top: 30px; }
 
 .button {
   display: inline-flex;
@@ -153,22 +189,93 @@ body:has(.intro) .backdrop-logo { opacity: 0.12; }
   font-weight: 750;
   line-height: 1.3;
   text-align: center;
-  transition: background-color 140ms, border-color 140ms, box-shadow 140ms;
+  transition: border-color 150ms ease-out, box-shadow 150ms ease-out, transform 150ms ease-out;
 }
 
-.button-primary { color: var(--night); background: var(--gold); }
-.button-primary:hover:enabled { background: var(--sand); box-shadow: 0 0 25px rgb(255 181 71 / 0.22); }
-.button-primary:disabled { color: var(--muted); border-color: var(--soft); background: var(--panel); }
+.button-primary {
+  border-color: rgb(255 255 255 / 0.31);
+  border-radius: 999px;
+  background: linear-gradient(175deg, var(--sand), var(--gold) 80%);
+  color: var(--night);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.50), 0 6px 20px rgb(255 181 71 / 0.16);
+}
 
-.button-secondary { border-color: var(--line); background: rgb(33 19 57 / 0.78); color: var(--paper); }
-.button-secondary:is(:hover:enabled, [aria-pressed="true"]) { border-color: var(--gold); color: var(--sand); }
-.button-symbol { font-size: 1.15em; line-height: 1; }
+.button-primary:disabled {
+  border-color: var(--soft);
+  background: var(--panel);
+  color: var(--muted);
+  box-shadow: none;
+}
+
+.button-secondary {
+  border-color: var(--glass-edge);
+  border-radius: 999px;
+  background: linear-gradient(156deg, rgb(197 155 208 / 0.16), transparent 80%), var(--panel);
+  color: var(--paper);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.07);
+}
+
+.button-secondary[aria-pressed="true"] { border-color: var(--gold); color: var(--sand); }
+.button:active:enabled { transform: scale(0.98); }
+
+@media (hover: hover) {
+  .button-primary:hover:enabled { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.50), 0 0 26px rgb(255 181 71 / 0.32); }
+  .button-secondary:hover:enabled { border-color: var(--gold); color: var(--sand); }
+}
 
 .panel {
-  border: 1px solid var(--line);
-  border-radius: 22px;
-  background: linear-gradient(135deg, rgb(55 32 98 / 0.85), rgb(26 16 47 / 0.96) 76%);
-  box-shadow: 0 18px 65px rgb(0 0 0 / 0.2);
+  position: relative;
+  border: 1px solid var(--glass-edge);
+  border-radius: 28px;
+  background:
+    radial-gradient(ellipse at 10% 0%, rgb(197 155 208 / 0.16), transparent 61%),
+    linear-gradient(148deg, rgb(70 38 131 / 0.48), transparent 74%),
+    rgb(26 13 47 / 0.96);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.21),
+    inset 0 -1px 0 rgb(197 155 208 / 0.14),
+    0 24px 80px rgb(4 0 12 / 0.36);
+}
+
+.panel::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 1px 0 0 rgb(255 255 255 / 0.13), inset -1px 0 0 rgb(255 255 255 / 0.07);
+  pointer-events: none;
+  content: '';
+}
+
+.intro-glass {
+  display: grid;
+  width: min(100%, 770px);
+  justify-items: center;
+  padding: clamp(35px, 7vw, 72px) clamp(16px, 6vw, 64px);
+  border-radius: clamp(26px, 5vw, 47px);
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .panel {
+    background:
+      radial-gradient(ellipse at 12% -10%, rgb(197 155 208 / 0.24), transparent 67%),
+      linear-gradient(145deg, rgb(70 38 131 / 0.43), rgb(26 13 47 / 0.73) 76%);
+    -webkit-backdrop-filter: blur(21px) saturate(140%);
+    backdrop-filter: blur(21px) saturate(140%);
+  }
+
+  .intro-glass {
+    background:
+      radial-gradient(ellipse at 6% -20%, rgb(197 155 208 / 0.31), transparent 69%),
+      linear-gradient(148deg, rgb(70 38 131 / 0.34), rgb(26 13 47 / 0.64) 78%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+    backdrop-filter: blur(12px) saturate(140%);
+  }
+
+  .masthead {
+    background: linear-gradient(155deg, rgb(197 155 208 / 0.19), transparent 65%), rgb(24 13 43 / 0.60);
+    -webkit-backdrop-filter: blur(13px) saturate(130%);
+    backdrop-filter: blur(13px) saturate(130%);
+  }
 }
 
 .welcome { max-width: 730px; margin: 22px auto 0; padding: clamp(24px, 6vw, 54px); }
@@ -261,7 +368,7 @@ body:has(.intro) .backdrop-logo { opacity: 0.12; }
 }
 
 .story .display-title { margin: 6px 0 13px; }
-.story-copy { max-width: 69ch; color: var(--muted); }
+.story-copy { max-width: 66ch; color: #f0e6f6; }
 .story-copy p + p { margin-top: 1em; }
 .scene-trace { margin: -3px 0 12px; color: var(--sand); font-size: 0.8rem; }
 .question { margin-top: 28px; }
@@ -313,8 +420,8 @@ body:has(.intro) .backdrop-logo { opacity: 0.12; }
   gap: 11px;
   padding: 13px;
   border: 1px solid var(--line);
-  border-radius: 12px;
-  background: rgb(33 19 57 / 0.94);
+  border-radius: 17px;
+  background: linear-gradient(145deg, rgb(197 155 208 / 0.13), transparent 70%), rgb(28 16 50 / 0.89);
   color: var(--paper);
   font-size: 0.89rem;
   font-weight: 560;
@@ -399,6 +506,8 @@ body:has(.intro) .backdrop-logo { opacity: 0.12; }
 }
 
 .explanations li { padding-top: 9px; border-top: 1px solid var(--soft); font-size: 0.83rem; }
+.explanation-status { display: block; margin-bottom: 2px; color: var(--lilac); font-size: 0.75rem; font-weight: 700; }
+.explanation-status[data-correct="true"] { color: #9ae3eb; }
 .explanations strong { display: block; color: var(--paper); font-weight: 700; }
 .explanations p { margin-top: 3px; color: var(--muted); }
 
@@ -458,25 +567,35 @@ body:has(.intro) .backdrop-logo { opacity: 0.12; }
 .recap .recap-example { max-width: 65ch; margin-top: 13px; }
 .result .button { margin-top: 20px; }
 
+@keyframes light-drift {
+  from { transform: translate3d(-2%, 1%, 0) scale(0.97); }
+  to { transform: translate3d(4%, -4%, 0) scale(1.08); }
+}
+
+@keyframes dust-drift {
+  from { transform: translate3d(-1%, 2%, 0); opacity: 0.59; }
+  to { transform: translate3d(3%, -2%, 0); opacity: 0.94; }
+}
+
 @keyframes appear {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @media (hover: none) {
-  .option:hover:enabled { background: rgb(33 19 57 / 0.94); border-color: var(--line); }
+  .option:hover:enabled { background: linear-gradient(145deg, rgb(197 155 208 / 0.13), transparent 70%), rgb(28 16 50 / 0.89); border-color: var(--line); }
   .option[aria-checked="true"]:hover:enabled { background: #372650; border-color: var(--gold); }
 }
 
 @media (max-width: 620px) {
   .shell, .masthead-inner { width: calc(100% - 32px); }
-  .masthead-inner { min-height: 68px; }
+  .masthead { width: calc(100% - 32px); margin-top: 12px; border-radius: 18px; }
+  .masthead-inner { width: calc(100% - 32px); min-height: 58px; }
   .masthead-logo { width: 100px; }
   .masthead-caption { font-size: 0.72rem; }
   .app { padding-block: 24px 36px; }
-  .intro { min-height: calc(100svh - 129px); padding-block: 22px 48px; }
-  .intro h1 { font-size: clamp(2.38rem, 9.5vw, 4.75rem); }
-  .intro-rule { margin-top: 23px; }
+  .intro { min-height: calc(100svh - 149px); padding-block: 12px 28px; }
+  .intro h1 { font-size: clamp(2.3rem, 10.5vw, 4.75rem); }
   .backdrop-logo { top: 45%; left: 64%; width: max(111vw, 390px); }
   .welcome { margin-top: 12px; }
   .options, .explanations ul { grid-template-columns: 1fr; }
@@ -489,7 +608,8 @@ body:has(.intro) .backdrop-logo { opacity: 0.12; }
 }
 
 @media (max-width: 410px) {
-  .progress li { gap: 5px; font-size: 0.69rem; }
+  .progress { gap: 7px; }
+  .progress li { flex-direction: column; align-items: flex-start; gap: 4px; font-size: 0.72rem; }
   .step-number { width: 22px; height: 22px; }
   .actions .button { flex: 1 1 100%; }
   .recap-grid { grid-template-columns: 1fr; }
@@ -500,4 +620,5 @@ body:has(.intro) .backdrop-logo { opacity: 0.12; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0s !important; transition-duration: 0s !important; }
+  .backdrop-lights, .backdrop-particles::before, .backdrop-particles::after { animation: none; }
 }
